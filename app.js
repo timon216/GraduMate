@@ -489,6 +489,36 @@ function openAddSubject() {
   editingId = null;
 }
 
+function openAddTask() {
+  openModal();
+  modalTitle.textContent = "Dodaj zadanie";
+  hideAllModalSections();
+  show(formTask);
+
+  hide(deleteSubjectBtn);
+  hide(deleteTaskBtn);
+  hide(deleteEventBtn);
+
+  editMode = false;
+  editingType = "task";
+  editingId = null;
+}
+
+function openAddEvent() {
+  openModal();
+  modalTitle.textContent = "Dodaj wydarzenie";
+  hideAllModalSections();
+  show(formEvent);
+
+  hide(deleteSubjectBtn);
+  hide(deleteTaskBtn);
+  hide(deleteEventBtn);
+
+  editMode = false;
+  editingType = "event";
+  editingId = null;
+}
+
 
 //------------//
 // edit modes //

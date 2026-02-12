@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GraduMate</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <h1 class="topbar__title" id="viewTitle">This week</h1>
+      <div id="authArea" class="auth-area">
+        <button id="signInBtn">Sign in</button>
+        <button id="signOutBtn" class="hidden">Sign out</button>
+        <span id="userEmail" class="hidden"></span>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <section class="view view--week" id="viewWeek">
+        <div class="week-list" id="weekList">
+        </div>
+      </section>
+
+      <section class="view view--tasks hidden" id="viewTasks">
+        <div class="tasks-list" id="tasksList">
+        </div>
+      </section>
+
+
+      <section class="view view--events hidden" id="viewEvents">
+        <div class="events-list" id="eventsList">
+        </div>
+      </section>
+
+      <section class="view view--subjects hidden" id="viewSubjects">
+        <div class="subjects-list" id="subjectsList">
+        </div>
+      </section>
+
+    </main>
+
+    <button class="fab" id="addButton" aria-label="Add">
+      +
+    </button>
+
+    <!-- main nav -->
+    <nav class="bottom-nav">
+      <button class="bottom-nav__btn active" id="navWeek">
+        This week
+      </button>
+      <button class="bottom-nav__btn" id="navTasks">
+        Tasks
+      </button>
+      <button class="bottom-nav__btn" id="navEvents">
+        Events
+      </button>
+      <button class="bottom-nav__btn" id="navSubjects">
+        Subjects
+      </button>
+    </nav>
+
+  </div>
+
+
+  <!-- add / edit modal -->
+  <div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__content" tabindex="-1">
+
+      <div class="modal__header">
+        <h2 class="modal__title" id="modalTitle">Add</h2>
+        <button class="modal__close" id="closeModal">✕</button>
+      </div>
+
+      <div class="modal__section hidden" id="modalTypeSelect">
+        <button class="modal__option" id="chooseSubject">Add subject</button>
+        <button class="modal__option" id="chooseTask">Add task</button>
+        <button class="modal__option" id="chooseEvent">Add event</button>
+      </div>
+
+      <!-- subject -->
+      <form class="modal__section hidden" id="formSubject">
+        <label class="form__label">
+          Subject
+          <input type="text" class="form__input" id="subjectName" required />
+        </label>
+        <button type="submit" class="form__submit">
+          Save
+        </button>
+        <button type="button" id="deleteSubjectBtn" class="danger hidden">Delete</button>
+      </form>
+
+      <!-- task -->
+      <form class="modal__section hidden" id="formTask">
+        <label class="form__label">
+          Task
+          <input type="text" class="form__input" id="taskTitle" required />
+        </label>
+        <label class="form__label">
+          Subject
+          <select class="form__select" id="taskSubject" required>
+          </select>
+        </label>
+        <label class="form__label">
+          Due date
+          <input type="date" class="form__input" id="taskDueDate" required />
+        </label>
+        <button type="submit" class="form__submit">
+          Save
+        </button>
+        <button type="button" id="deleteTaskBtn" class="danger hidden">Delete</button>
+      </form>
+
+      <!-- event -->
+      <form class="modal__section hidden" id="formEvent">
+        <label class="form__label">
+          Event
+          <input type="text" class="form__input" id="eventTitle" required />
+        </label>
+        <label class="form__label">
+          Subject
+          <select class="form__select" id="eventSubject" required>
+          </select>
+        </label>
+        <label class="form__label">
+          Date
+          <input type="date" class="form__input" id="eventDate" required />
+        </label>
+        <button type="submit" class="form__submit">
+          Save
+        </button>
+        <button type="button" id="deleteEventBtn" class="danger hidden">Delete</button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="modal hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+    <div class="modal__content" tabindex="-1">
+      <div class="modal__header">
+        <h2 class="modal__title" id="authModalTitle">Login</h2>
+        <button class="modal__close" id="closeAuthModal">✕</button>
+      </div>
+
+      <form id="authForm" class="modal__section">
+        <label class="form__label">E-mail
+          <input type="email" id="authEmail" class="form__input" required />
+        </label>
+
+        <label class="form__label">Password
+          <input type="password" id="authPassword" class="form__input" required />
+        </label>
+
+        <div style="display:flex;gap:8px">
+          <button type="button" id="authLogin" class="form__submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>

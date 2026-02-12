@@ -191,6 +191,62 @@ function switchView(viewName) {
 }
 
 
+//----------------//
+// render helpers //
+//----------------//
+
+function createItemElement({ title, meta, dateMain, dateSub, isEvent, onClick }) {
+  const item = document.createElement("div");
+  item.classList.add("item");
+
+  const left = document.createElement("div");
+  left.classList.add("item__left");
+
+  const icon = document.createElement("span");
+  icon.classList.add("item__icon");
+  icon.textContent = isEvent ? "★" : "";
+  left.appendChild(icon);
+
+  const content = document.createElement("div");
+  content.classList.add("item__content");
+
+  const t = document.createElement("div");
+  t.classList.add("item__title");
+  t.textContent = title;
+
+  const m = document.createElement("div");
+  m.classList.add("item__meta");
+  m.textContent = meta;
+
+  content.appendChild(t);
+  content.appendChild(m);
+
+  const date = document.createElement("div");
+  date.classList.add("item__date");
+  if (dateMain) {
+    const main = document.createElement("div");
+    main.classList.add("item__date-main");
+    main.textContent = dateMain;
+    date.appendChild(main);
+  }
+
+  if (dateSub) {
+    const sub = document.createElement("div");
+    sub.classList.add("item__date-sub");
+    sub.textContent = dateSub;
+    date.appendChild(sub);
+  }
+
+  item.appendChild(left);
+  item.appendChild(content);
+  item.appendChild(date);
+
+  item.addEventListener("click", onClick);
+
+  return item;
+}
+
+
 //--------------//
 // render views //
 //--------------//

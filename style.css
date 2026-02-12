@@ -90,3 +90,39 @@ p {
 .hidden {
   display: none !important;
 }
+
+
+/* ----------- */
+/* basic style */
+/* ----------- */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: var(--fs-400);
+
+    background-color: var(--clr-light);
+    color: var(--clr-dark);
+}
+
+h1 {
+  font-size: var(--fs-600);
+}
+
+/* ---------- */
+/* app layout */
+/* ---------- */
+
+.app {
+  max-width: 480px;
+  height: 100vh;
+
+  margin: 0 auto;
+  padding-block: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  
+
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}

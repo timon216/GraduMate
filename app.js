@@ -316,3 +316,32 @@ function renderAll() {
   renderEventsView();
   renderSubjectsView();
 }
+
+
+//-----------------//
+// event listeners //
+//-----------------//
+
+navWeek.addEventListener("click", () => switchView("week"));
+navTasks.addEventListener("click", () => switchView("tasks"));
+navEvents.addEventListener("click", () => switchView("events"));
+navSubjects.addEventListener("click", () => switchView("subjects"));
+
+addButton.addEventListener("click", openAddMenu);
+closeModalBtn.addEventListener("click", closeModal);
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) closeModal();
+});
+
+chooseSubject.addEventListener("click", openAddSubject);
+chooseTask.addEventListener("click", openAddTask);
+chooseEvent.addEventListener("click", openAddEvent);
+
+
+//------//
+// init //
+//------//
+
+fillSubjectSelects();
+switchView("week");

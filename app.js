@@ -154,6 +154,51 @@ function generateId(prefix) {
   return prefix + "_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
 }
 
+function toTimestamp(dateStr) {
+  return new Date(dateStr).getTime();
+}
+
+function startOfDay(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function daysFromToday(dateStr) {
+  const target = startOfDay(new Date(dateStr));
+  const today = startOfDay(new Date());
+  const diffMs = target - today;
+  return Math.floor(diffMs / 86400000);
+}
+
+function isWithinNextDays(dateStr, days) {
+  const diff = daysFromToday(dateStr);
+  return diff >= 0 && diff <= days;
+}
+
+function prettyDate(dateStr) {
+  const diff = daysFromToday(dateStr);
+  if (diff === 0) return "Dzisiaj";
+  if (diff === 1) return "Jutro";
+  if (diff > 1 && diff <= 7) return `Za ${diff} dni`;
+  try {
+    return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatEventMainDate(dateStr) {
+  try {
+    const d = new Date(dateStr);
+    const weekday = d.toLocaleDateString('pl-PL', { weekday: 'short' });
+    const dayMonth = d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' });
+    return `${weekday}, ${dayMonth}`;
+  } catch {
+    return dateStr;
+  }
+}
+
 
 //-------------//
 // view switch //

@@ -294,6 +294,39 @@ function switchView(viewName) {
 }
 
 
+//-----------------//
+// subject selects //
+//-----------------//
+
+function fillSubjectSelects() {
+  taskSubject.innerHTML = "";
+  eventSubject.innerHTML = "";
+
+  subjects.forEach(sub => {
+    const opt1 = document.createElement("option");
+    opt1.value = sub.id;
+    opt1.textContent = sub.name;
+    taskSubject.appendChild(opt1);
+
+    const opt2 = document.createElement("option");
+    opt2.value = sub.id;
+    opt2.textContent = sub.name;
+    eventSubject.appendChild(opt2);
+  });
+
+  // Disable add-task/add-event options when there are no subjects
+  const noSubjects = subjects.length === 0;
+  if (chooseTask) {
+    chooseTask.disabled = noSubjects;
+    chooseTask.title = noSubjects ? 'Dodaj najpierw przedmiot' : '';
+  }
+  if (chooseEvent) {
+    chooseEvent.disabled = noSubjects;
+    chooseEvent.title = noSubjects ? 'Dodaj najpierw przedmiot' : '';
+  }
+}
+
+
 //----------------//
 // render helpers //
 //----------------//

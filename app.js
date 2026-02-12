@@ -818,6 +818,37 @@ if (deleteEventBtn) {
 }
 
 
+// ===== STORAGE KEYS =====
+const STORAGE_SUBJECTS = "graduMate_subjects";
+const STORAGE_TASKS = "graduMate_tasks";
+const STORAGE_EVENTS = "graduMate_events";
+
+
+// ===== LOAD FROM LOCALSTORAGE =====
+function loadData(key, fallback) {
+  const raw = localStorage.getItem(key);
+  if (!raw) return fallback;
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+let subjects = loadData(STORAGE_SUBJECTS, defaultSubjects);
+let tasks = loadData(STORAGE_TASKS, defaultTasks);
+let events = loadData(STORAGE_EVENTS, defaultEvents);
+
+
+// ===== SAVE TO LOCALSTORAGE =====
+function saveAll() {
+  localStorage.setItem(STORAGE_SUBJECTS, JSON.stringify(subjects));
+  localStorage.setItem(STORAGE_TASKS, JSON.stringify(tasks));
+  localStorage.setItem(STORAGE_EVENTS, JSON.stringify(events));
+}
+
+
 //-----------------//
 // event listeners //
 //-----------------//

@@ -200,6 +200,64 @@ function formatEventMainDate(dateStr) {
 }
 
 
+//--------------------//
+// modal accesibility //
+//--------------------//
+
+let _prevActiveElement = null;
+let _modalKeyHandler = null;
+
+function getFocusableElements(container) {
+  return Array.from(container.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'))
+    .filter(el => !el.hasAttribute('disabled'));
+}
+
+function trapFocus(modalContent) {
+  _prevActiveElement = document.activeElement;
+  const focusable = getFocusableElements(modalContent);
+  if (focusable.length) focusable[0].focus();
+
+  _modalKeyHandler = function (e) {
+    if (e.key === 'Tab') {
+      const focusableNow = getFocusableElements(modalContent);
+      if (focusableNow.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusableNow[0];
+      const last = focusableNow[focusableNow.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  };
+
+  document.addEventListener('keydown', _modalKeyHandler);
+}
+
+function releaseFocus() {
+  if (_modalKeyHandler) {
+    document.removeEventListener('keydown', _modalKeyHandler);
+    _modalKeyHandler = null;
+  }
+  if (_prevActiveElement) {
+    try { _prevActiveElement.focus(); } catch { }
+    _prevActiveElement = null;
+  }
+}
+
+
 //-------------//
 // view switch //
 //-------------//

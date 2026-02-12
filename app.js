@@ -399,6 +399,41 @@ function deleteEvent(id) {
 }
 
 
+//---------------//
+// modal openers //
+//---------------//
+
+function openAddMenu() {
+  openModal();
+  modalTitle.textContent = "Dodaj";
+  hideAllModalSections();
+  show(modalTypeSelect);
+
+  hide(deleteSubjectBtn);
+  hide(deleteTaskBtn);
+  hide(deleteEventBtn);
+
+  editMode = false;
+  editingType = null;
+  editingId = null;
+}
+
+function openAddSubject() {
+  openModal();
+  modalTitle.textContent = "Dodaj przedmiot";
+  hideAllModalSections();
+  show(formSubject);
+
+  hide(deleteSubjectBtn);
+  hide(deleteTaskBtn);
+  hide(deleteEventBtn);
+
+  editMode = false;
+  editingType = "subject";
+  editingId = null;
+}
+
+
 //-----------------//
 // event listeners //
 //-----------------//

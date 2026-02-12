@@ -555,6 +555,48 @@ formEvent.addEventListener("submit", (e) => {
 
 
 //-----------------//
+// delete handlers //
+//-----------------//
+
+if (deleteSubjectBtn) {
+  deleteSubjectBtn.addEventListener("click", () => {
+    if (!editingId) return;
+    if (!confirm("Usunąć ten przedmiot? (usunie też jego zadania i wydarzenia)")) return;
+
+    deleteSubject(editingId);
+
+    fillSubjectSelects();
+    renderAll();
+    closeModal();
+  });
+}
+
+if (deleteTaskBtn) {
+  deleteTaskBtn.addEventListener("click", () => {
+    if (!editingId) return;
+    if (!confirm("Usunąć to zadanie?")) return;
+
+    deleteTask(editingId);
+
+    renderAll();
+    closeModal();
+  });
+}
+
+if (deleteEventBtn) {
+  deleteEventBtn.addEventListener("click", () => {
+    if (!editingId) return;
+    if (!confirm("Usunąć to wydarzenie?")) return;
+
+    deleteEvent(editingId);
+
+    renderAll();
+    closeModal();
+  });
+}
+
+
+//-----------------//
 // event listeners //
 //-----------------//
 

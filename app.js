@@ -434,6 +434,126 @@ function openAddSubject() {
 }
 
 
+//------------//
+// edit modes //
+//------------//
+
+function openEditSubject(id) {
+  const sub = subjects.find(s => s.id === id);
+  if (!sub) return;
+
+  openModal();
+  modalTitle.textContent = "Edytuj przedmiot";
+  hideAllModalSections();
+  show(formSubject);
+
+  subjectName.value = sub.name;
+
+  show(deleteSubjectBtn);
+  hide(deleteTaskBtn);
+  hide(deleteEventBtn);
+
+  editMode = true;
+  editingType = "subject";
+  editingId = id;
+}
+
+function openEditTask(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  openModal();
+  modalTitle.textContent = "Edytuj zadanie";
+  hideAllModalSections();
+  show(formTask);
+
+  taskTitle.value = task.title;
+  taskSubject.value = task.subjectId;
+  taskDueDate.value = task.dueDate;
+
+  hide(deleteSubjectBtn);
+  show(deleteTaskBtn);
+  hide(deleteEventBtn);
+
+  editMode = true;
+  editingType = "task";
+  editingId = id;
+}
+
+function openEditEvent(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+
+  openModal();
+  modalTitle.textContent = "Edytuj wydarzenie";
+  hideAllModalSections();
+  show(formEvent);
+
+  eventTitle.value = ev.title;
+  eventSubject.value = ev.subjectId;
+  eventDate.value = ev.date;
+
+  hide(deleteSubjectBtn);
+  hide(deleteTaskBtn);
+  show(deleteEventBtn);
+
+  editMode = true;
+  editingType = "event";
+  editingId = id;
+}
+
+
+//--------------//
+// form submits //
+//--------------//
+
+formSubject.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const name = subjectName.value.trim();
+  if (!name) return;
+
+  if (!editMode) addSubject(name);
+  else updateSubject(editingId, name);
+
+  fillSubjectSelects();
+  renderAll();
+  closeModal();
+});
+
+formTask.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const title = taskTitle.value.trim();
+  const subjectId = taskSubject.value;
+  const dueDate = taskDueDate.value;
+
+  if (!title || !subjectId || !dueDate) return;
+
+  if (!editMode) addTask(title, subjectId, dueDate);
+  else updateTask(editingId, title, subjectId, dueDate);
+
+  renderAll();
+  closeModal();
+});
+
+formEvent.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const title = eventTitle.value.trim();
+  const subjectId = eventSubject.value;
+  const date = eventDate.value;
+
+  if (!title || !subjectId || !date) return;
+
+  if (!editMode) addEvent(title, subjectId, date);
+  else updateEvent(editingId, title, subjectId, date);
+
+  renderAll();
+  closeModal();
+});
+
+
 //-----------------//
 // event listeners //
 //-----------------//

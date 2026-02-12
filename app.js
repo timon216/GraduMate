@@ -190,7 +190,11 @@ function switchView(viewName) {
   renderAll();
 }
 
-// ===== RENDER VIEWS =====
+
+//--------------//
+// render views //
+//--------------//
+
 function renderWeekView() {
   weekList.innerHTML = "";
 
@@ -315,6 +319,83 @@ function renderAll() {
   renderTasksView();
   renderEventsView();
   renderSubjectsView();
+}
+
+
+//------//
+// CRUD //
+//------//
+
+function addSubject(name) {
+  subjects.push({
+    id: generateId("s"),
+    name
+  });
+  saveAll();
+}
+
+function updateSubject(id, name) {
+  const sub = subjects.find(s => s.id === id);
+  if (!sub) return;
+  sub.name = name;
+  saveAll();
+}
+
+function deleteSubject(id) {
+  subjects = subjects.filter(s => s.id !== id);
+  tasks = tasks.filter(t => t.subjectId !== id);
+  events = events.filter(e => e.subjectId !== id);
+  saveAll();
+}
+
+function addTask(title, subjectId, dueDate) {
+  tasks.push({
+    id: generateId("t"),
+    title,
+    subjectId,
+    dueDate
+  });
+  saveAll();
+}
+
+function updateTask(id, title, subjectId, dueDate) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  task.title = title;
+  task.subjectId = subjectId;
+  task.dueDate = dueDate;
+  saveAll();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveAll();
+}
+
+function addEvent(title, subjectId, date) {
+  events.push({
+    id: generateId("e"),
+    title,
+    subjectId,
+    date
+  });
+  saveAll();
+}
+
+function updateEvent(id, title, subjectId, date) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+
+  ev.title = title;
+  ev.subjectId = subjectId;
+  ev.date = date;
+  saveAll();
+}
+
+function deleteEvent(id) {
+  events = events.filter(e => e.id !== id);
+  saveAll();
 }
 
 

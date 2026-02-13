@@ -9,8 +9,8 @@ const defaultSubjects = [
 ];
 
 const defaultTasks = [
-  { id: "t1", title: "Task 1", subjectId: "s1", dueDate: "2026-02-12" },
-  { id: "t2", title: "Task 2", subjectId: "s3", dueDate: "2026-02-15" }
+  { id: "t1", title: "Task 1", subjectId: "s1", dueDate: "2026-02-12", completed: false },
+  { id: "t2", title: "Task 2", subjectId: "s3", dueDate: "2026-02-15", completed: false }
 ];
 
 const defaultEvents = [
@@ -60,6 +60,7 @@ const subjectName = document.getElementById("subjectName");
 const taskTitle = document.getElementById("taskTitle");
 const taskSubject = document.getElementById("taskSubject");
 const taskDueDate = document.getElementById("taskDueDate");
+const taskCompleted = document.getElementById("taskCompleted");
 
 const eventTitle = document.getElementById("eventTitle");
 const eventSubject = document.getElementById("eventSubject");
@@ -109,6 +110,7 @@ function clearForms() {
   subjectName.value = "";
   taskTitle.value = "";
   taskDueDate.value = "";
+  taskCompleted.checked = false;
   eventTitle.value = "";
   eventDate.value = "";
 }
@@ -331,17 +333,30 @@ function fillSubjectSelects() {
 // render helpers //
 //----------------//
 
-function createItemElement({ title, meta, dateMain, dateSub, isEvent, onClick }) {
+function createItemElement({ title, meta, dateMain, dateSub, isEvent, onClick, taskId, completed, onCheckChange }) {
   const item = document.createElement("div");
   item.classList.add("item");
+  if (completed) item.classList.add("item--completed");
 
   const left = document.createElement("div");
   left.classList.add("item__left");
 
-  const icon = document.createElement("span");
-  icon.classList.add("item__icon");
-  icon.textContent = isEvent ? "★" : "";
-  left.appendChild(icon);
+  let icon;
+  if (taskId !== undefined) {
+    // It's a task - add checkbox
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.classList.add("item__checkbox");
+    checkbox.checked = completed;
+    checkbox.addEventListener("change", onCheckChange);
+    left.appendChild(checkbox);
+  } else {
+    // It's an event - add star icon
+    icon = document.createElement("span");
+    icon.classList.add("item__icon");
+    icon.textContent = isEvent ? "★" : "";
+    left.appendChild(icon);
+  }
 
   const content = document.createElement("div");
   content.classList.add("item__content");
@@ -408,13 +423,15 @@ function renderWeekView() {
       id: task.id,
       title: task.title,
       subjectId: task.subjectId,
-      date: task.dueDate
+      date: task.dueDate,
+      completed: task.completed
     });
   });
 
   weekItems.sort((a, b) => toTimestamp(a.date) - toTimestamp(b.date));
 
-  const visible = weekItems.filter(item => isWithinNextDays(item.date, 7));
+  // Filter to this week AND exclude completed tasks
+  const visible = weekItems.filter(item => isWithinNextDays(item.date, 7) && !(item.kind === "task" && item.completed));
 
   visible.forEach(item => {
     let dateMain = null;
@@ -437,6 +454,11 @@ function renderWeekView() {
       dateMain,
       dateSub,
       isEvent: item.kind === "event",
+      taskId: item.kind === "task" ? item.id : undefined,
+      completed: item.completed || false,
+      onCheckChange: () => {
+        if (item.kind === "task") toggleTaskCompletion(item.id);
+      },
       onClick: () => {
         if (item.kind === "event") openEditEvent(item.id);
         if (item.kind === "task") openEditTask(item.id);
@@ -462,6 +484,9 @@ function renderTasksView() {
       dateMain,
       dateSub: null,
       isEvent: false,
+      taskId: task.id,
+      completed: task.completed,
+      onCheckChange: () => toggleTaskCompletion(task.id),
       onClick: () => openEditTask(task.id)
     });
 
@@ -545,18 +570,27 @@ function addTask(title, subjectId, dueDate) {
     id: generateId("t"),
     title,
     subjectId,
-    dueDate
+    dueDate,
+    completed: false
   });
   saveAll();
 }
 
-function updateTask(id, title, subjectId, dueDate) {
+function updateTask(id, title, subjectId, dueDate, completed) {
   const task = tasks.find(t => t.id === id);
   if (!task) return;
 
   task.title = title;
   task.subjectId = subjectId;
   task.dueDate = dueDate;
+  if (completed !== undefined) task.completed = completed;
+  saveAll();
+}
+
+function toggleTaskCompletion(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  task.completed = !task.completed;
   saveAll();
 }
 
@@ -692,6 +726,7 @@ function openEditTask(id) {
   taskTitle.value = task.title;
   taskSubject.value = task.subjectId;
   taskDueDate.value = task.dueDate;
+  taskCompleted.checked = task.completed;
 
   hide(deleteSubjectBtn);
   show(deleteTaskBtn);
@@ -753,7 +788,7 @@ formTask.addEventListener("submit", (e) => {
   if (!title || !subjectId || !dueDate) return;
 
   if (!editMode) addTask(title, subjectId, dueDate);
-  else updateTask(editingId, title, subjectId, dueDate);
+  else updateTask(editingId, title, subjectId, dueDate, taskCompleted.checked);
 
   renderAll();
   closeModal();

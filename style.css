@@ -114,7 +114,7 @@ h1 {
 
 .app {
   max-width: 480px;
-  height: 100vh;
+  min-height: 100vh;
 
   margin: 0 auto;
   padding-block: 2rem;
@@ -267,10 +267,14 @@ main {
 /* main nav */
 
 .bottom-nav {
-  width: calc(100% - 4rem);
-  margin-inline: 2rem;
-  margin-top: auto;
   padding: 0.1rem;
+
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(480px - 4rem);
+
 
   display: flex;
   align-items: center;
@@ -298,6 +302,8 @@ main {
 
   padding: 0.2rem 1.2rem;
   border-radius: 10rem;
+
+  cursor: pointer;
 }
 
 .bottom-nav__btn svg {
@@ -311,6 +317,7 @@ main {
 }
 
 /* fab */
+
 .fab {
   position: fixed;
   bottom: 7rem;
@@ -328,5 +335,84 @@ main {
 }
 
 .fab:hover {
-  background: #333;
+  background: var(--clr-primary);
+}
+
+/* modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal__content {
+  width: 100%;
+  max-width: 420px;
+  background: var(--clr-light);
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--clr-secondary);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.modal__title {
+  font-size: var(--fs-500);
+  font-weight: 700;
+}
+
+.modal__close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--fs-500);
+}
+
+.modal__option {
+  background-color: transparent;
+  padding: 0.4rem 1.4rem;
+  border-radius: 10rem;
+  border: 1px solid var(--clr-primary);
+
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal__option:hover {
+  background-color: var(--clr-secondary);
+  color: var(--clr-light);
+}
+
+/* forms */
+
+form button {
+  padding: 0.3rem 1.5rem;
+  border-radius: 5rem;
+  background-color: var(--clr-secondary);
+  border: none;
+
+  color: var(--clr-light);
+  box-shadow: 4px 3px 11.3px 0px rgba(0,0,0,0.1), inset -3px -4px 7px 0px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.modal__section {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form__label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }

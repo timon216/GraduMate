@@ -117,7 +117,7 @@ h1 {
   height: 100vh;
 
   margin: 0 auto;
-  padding-block: 1rem;
+  padding-block: 2rem;
 
   display: flex;
   flex-direction: column;
@@ -125,4 +125,141 @@ h1 {
   
 
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+/* topbar */
+
+.topbar {
+  width: 100%;
+  margin-bottom: 2rem;
+  padding-inline: 2rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-area {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-area button {
+  padding: 0.3rem 1.5rem;
+  border-radius: 5rem;
+  border: 1px solid var(--clr-secondary);
+
+  color: var(--clr-secondary);
+  font-weight: 600;
+  box-shadow: 4px 3px 11.3px 0px rgba(0,0,0,0.1), inset -3px -4px 7px 0px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+/* main */
+main {
+  width: 100%;
+}
+
+.week-list,
+.tasks-list,
+.events-list,
+.subjects-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  position: relative;
+
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+
+  padding: 1rem 2rem;
+
+  cursor: pointer;
+}
+
+.item::after {
+  content: "";
+  position: absolute;
+  left: 2rem;
+  right: 2rem;
+  bottom: 0;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.item input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+
+  margin-top: 0.25rem;
+}
+
+.item__icon {
+  display: inline-block;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.item__title {
+  font-weight: 500;
+}
+
+.item__meta {
+  font-size: var(--fs-300);
+  opacity: 0.8;
+}
+
+.item__date {
+  margin-left: auto;
+  text-align: end;
+}
+
+.item__date-main {
+  font-weight: 600;
+  font-size: var(--fs-400);
+}
+
+.item__date-sub {
+  font-size: var(--fs-300);
+  opacity: 0.8;
+}
+
+.item:not(:has(input[type="checkbox"])) {
+  background-color: rgb(196, 221, 232);
+}
+
+.item:has(input[type="checkbox"]) .item__date-main {
+  font-size: var(--fs-300);
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.item--completed {
+  opacity: 0.8;
+}
+
+.item--completed .item__title,
+.item--completed .item__meta,
+.item--completed .item__date {
+  color: #616161;
+  text-decoration: line-through;
+}
+
+.subject-item {
+  position: relative;
+  padding: 0.5rem 2rem;
+}
+
+.subject-item::after {
+  content: "";
+  position: absolute;
+  left: 2rem;
+  right: 2rem;
+  bottom: 0;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.3);
 }

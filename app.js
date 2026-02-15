@@ -70,6 +70,17 @@ const deleteSubjectBtn = document.getElementById("deleteSubjectBtn");
 const deleteTaskBtn = document.getElementById("deleteTaskBtn");
 const deleteEventBtn = document.getElementById("deleteEventBtn");
 
+const signInBtn = document.getElementById('signInBtn');
+const signOutBtn = document.getElementById('signOutBtn');
+const syncBtn = document.getElementById('syncBtn');
+const userEmailSpan = document.getElementById('userEmail');
+const authModal = document.getElementById('authModal');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authForm = document.getElementById('authForm');
+const authEmail = document.getElementById('authEmail');
+const authPassword = document.getElementById('authPassword');
+const authLogin = document.getElementById('authLogin');
+
 
 //-----------//
 // app state //
@@ -881,8 +892,121 @@ function saveAll() {
   localStorage.setItem(STORAGE_SUBJECTS, JSON.stringify(subjects));
   localStorage.setItem(STORAGE_TASKS, JSON.stringify(tasks));
   localStorage.setItem(STORAGE_EVENTS, JSON.stringify(events));
+  // if signed in, mirror to Firestore
+  if (firebaseUser && firebaseDB) {
+    saveAllToFirestore().catch(err => console.warn('saveAllToFirestore failed', err));
+  }
 }
 
+//----------------//
+// firebase setup //
+//----------------//
+
+// ===== FIREBASE / SYNC STATE =====
+let firebaseApp = null;
+let firebaseAuth = null;
+let firebaseDB = null;
+let firebaseUser = null; // firebase user object when signed in
+let firestoreEnabled = false;
+
+// Placeholder config: replace with your Firebase project's config
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  // ...other values from Firebase console
+};
+
+function initFirebase() {
+  if (!window.firebase) return;
+  try {
+    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseAuth = firebase.auth();
+    firebaseDB = firebase.firestore();
+
+    // enable offline persistence (best-effort)
+    firebaseDB.enablePersistence()
+      .then(() => { firestoreEnabled = true; })
+      .catch((err) => { console.warn('Firestore persistence not enabled', err); });
+
+    firebaseAuth.onAuthStateChanged(user => {
+      firebaseUser = user;
+      // update UI + migration
+      if (user) {
+        // signed in
+        if (userEmailSpan) {
+          userEmailSpan.textContent = user.email || user.uid;
+          userEmailSpan.classList.remove('hidden');
+        }
+        if (signInBtn) hide(signInBtn);
+        if (syncBtn) show(syncBtn);
+        if (signOutBtn) show(signOutBtn);
+
+        // Attempt to load data from Firestore; if none exists, upload local data
+        loadFromFirestoreAndApply().then(found => {
+          if (!found) {
+            // no remote data — upload local
+            saveAllToFirestore().catch(err => console.warn('Initial upload failed', err));
+          }
+        }).catch(err => console.warn(err));
+      } else {
+        // signed out
+        firebaseUser = null;
+        if (userEmailSpan) userEmailSpan.classList.add('hidden');
+        if (signInBtn) show(signInBtn);
+        if (syncBtn) hide(syncBtn);
+        if (signOutBtn) hide(signOutBtn);
+      }
+    });
+  } catch (err) {
+    console.warn('Firebase init failed', err);
+  }
+}
+
+async function saveAllToFirestore() {
+  if (!firebaseUser || !firebaseDB) return;
+  try {
+    await firebaseDB.collection('users').doc(firebaseUser.uid).set({
+      subjects,
+      tasks,
+      events
+    }, { merge: true });
+  } catch (err) {
+    console.warn('Firestore save failed', err);
+  }
+}
+
+async function loadFromFirestoreAndApply() {
+  if (!firebaseUser || !firebaseDB) return false;
+  try {
+    const docRef = firebaseDB.collection('users').doc(firebaseUser.uid);
+    const snap = await docRef.get();
+    if (!snap.exists) return false;
+    const data = snap.data();
+    if (data) {
+      if (Array.isArray(data.subjects)) subjects = data.subjects;
+      if (Array.isArray(data.tasks)) tasks = data.tasks;
+      if (Array.isArray(data.events)) events = data.events;
+      saveAll();
+      fillSubjectSelects();
+      renderAll();
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.warn('Firestore load failed', err);
+    return false;
+  }
+}
+
+// If Firebase is not available or not configured, hide/remove auth UI so app works purely local
+if (!window.firebase) {
+  const authArea = document.getElementById('authArea');
+  if (authArea) authArea.style.display = 'none';
+  if (authModal && authModal.parentNode) authModal.parentNode.removeChild(authModal);
+  if (signInBtn && signInBtn.parentNode) signInBtn.parentNode.removeChild(signInBtn);
+  if (signOutBtn && signOutBtn.parentNode) signOutBtn.parentNode.removeChild(signOutBtn);
+}
 
 //-----------------//
 // event listeners //
@@ -904,10 +1028,58 @@ chooseSubject.addEventListener("click", openAddSubject);
 chooseTask.addEventListener("click", openAddTask);
 chooseEvent.addEventListener("click", openAddEvent);
 
+// Auth UI handlers
+if (signInBtn) signInBtn.addEventListener('click', () => { show(authModal); const c = authModal.querySelector('.modal__content'); if (c) try { trapFocus(c); } catch { } });
+if (closeAuthModal) closeAuthModal.addEventListener('click', () => { closeAuth(); });
+if (signOutBtn) signOutBtn.addEventListener('click', async () => { if (!firebaseAuth) return; try { await firebaseAuth.signOut(); } catch (err) { console.warn(err); } });
+
+if (authLogin) authLogin.addEventListener('click', async () => {
+  const email = authEmail.value.trim();
+  const pass = authPassword.value;
+  if (!email || !pass) return alert('Wprowadź e-mail i hasło');
+  try {
+    await firebaseAuth.signInWithEmailAndPassword(email, pass);
+    closeAuth();
+  } catch (err) {
+    alert('Logowanie nieudane: ' + err.message);
+  }
+});
+
+// Registration disabled for single-user setup (create account via Firebase console)
+
+// Sync button handler
+if (syncBtn) syncBtn.addEventListener('click', async () => {
+  syncBtn.disabled = true;
+  syncBtn.classList.add('syncing');
+  const origText = syncBtn.textContent;
+  syncBtn.textContent = '⟳ Syncing...';
+
+  try {
+    const found = await loadFromFirestoreAndApply();
+    syncBtn.textContent = found ? '✓ Synced' : '✓ Local data';
+  } catch (err) {
+    console.warn('Sync failed', err);
+    syncBtn.textContent = '✗ Sync failed';
+  }
+
+  setTimeout(() => {
+    syncBtn.textContent = origText;
+    syncBtn.disabled = false;
+    syncBtn.classList.remove('syncing');
+  }, 2000);
+});
+
+function closeAuth() {
+  hide(authModal);
+  releaseFocus();
+  authEmail.value = '';
+  authPassword.value = '';
+}
 
 //------//
 // init //
 //------//
 
 fillSubjectSelects();
+try { initFirebase(); } catch (e) { console.error("INIT FIREBASE ERROR:", e); }
 switchView("week");

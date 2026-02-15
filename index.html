@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GraduMate</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <script src="app.js" defer></script>
 </head>
 
@@ -16,8 +22,9 @@
       <h1 class="topbar__title" id="viewTitle">This week</h1>
       <div id="authArea" class="auth-area">
         <button id="signInBtn">Sign in</button>
+        <button id="syncBtn" class="hidden sync-btn" title="Pobierz najnowsze dane">↻ Sync</button>
         <button id="signOutBtn" class="hidden">Sign out</button>
-        <span id="userEmail" class="hidden"></span>
+        <!-- <span id="userEmail" class="hidden"></span> -->
       </div>
     </header>
 
@@ -171,7 +178,6 @@
       </form>
     </div>
   </div>
-
 </body>
 
 </html>

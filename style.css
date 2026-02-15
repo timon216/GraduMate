@@ -155,6 +155,11 @@ h1 {
   cursor: pointer;
 }
 
+.auth-area .sync-btn {
+  background-color: var(--clr-secondary);
+  color: var(--clr-light);
+}
+
 /* main */
 main {
   width: 100%;

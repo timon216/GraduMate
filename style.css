@@ -1,3 +1,6 @@
+.item--overdue {
+  background-color: #ffe4ea !important; /* light pink */
+}
 /* ----------- */
 /* variables   */
 /* ----------- */

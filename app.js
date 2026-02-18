@@ -347,6 +347,16 @@ function fillSubjectSelects() {
 function createItemElement({ title, meta, dateMain, dateSub, isEvent, onClick, taskId, completed, onCheckChange }) {
   const item = document.createElement("div");
   item.classList.add("item");
+  // Overdue logic: add class if overdue and not completed
+  let isOverdue = false;
+  if (taskId !== undefined && !completed) {
+    // Find the due date from dateMain or dateSub context
+    // We'll pass an extra property for overdue detection
+    if (typeof arguments[0].overdueDays === 'number' && arguments[0].overdueDays > 0) {
+      isOverdue = true;
+      item.classList.add("item--overdue");
+    }
+  }
   if (completed) item.classList.add("item--completed");
 
   const left = document.createElement("div");
@@ -403,6 +413,7 @@ function createItemElement({ title, meta, dateMain, dateSub, isEvent, onClick, t
   item.appendChild(content);
   item.appendChild(date);
 
+  
   // --- Custom click/long-press logic ---
   let pressTimer = null;
   let longPressTriggered = false;
@@ -478,6 +489,7 @@ function renderWeekView() {
   visible.forEach(item => {
     let dateMain = null;
     let dateSub = null;
+    let overdueDays = 0;
 
     if (item.kind === "event") {
       dateMain = formatEventMainDate(item.date);
@@ -486,8 +498,20 @@ function renderWeekView() {
       else if (d > 0 && d <= 7) dateSub = `in ${d} days`;
     } else {
       const d = daysFromToday(item.date);
-      if (d === 0) dateMain = "Today";
-      else dateMain = `in ${d} days`;
+      if (item.completed) {
+        // Show calendar date for completed tasks
+        try {
+          const dt = new Date(item.date);
+          dateMain = dt.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: '2-digit' });
+        } catch {
+          dateMain = item.date;
+        }
+      } else if (d === 0) dateMain = "Today";
+      else if (d > 0) dateMain = `in ${d} days`;
+      else {
+        overdueDays = Math.abs(d);
+        dateMain = `overdue by ${overdueDays} day${overdueDays === 1 ? '' : 's'}`;
+      }
     }
 
     const el = createItemElement({
@@ -504,7 +528,8 @@ function renderWeekView() {
       onClick: () => {
         if (item.kind === "event") openEditEvent(item.id);
         if (item.kind === "task") openEditTask(item.id);
-      }
+      },
+      overdueDays: overdueDays
     });
 
     weekList.appendChild(el);
@@ -518,7 +543,22 @@ function renderTasksView() {
 
   sorted.forEach(task => {
     const d = daysFromToday(task.dueDate);
-    const dateMain = d === 0 ? "Today" : `in ${d} days`;
+    let dateMain = "";
+    let overdueDays = 0;
+    if (task.completed) {
+      // Show calendar date for completed tasks
+      try {
+        const dt = new Date(task.dueDate);
+        dateMain = dt.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: '2-digit' });
+      } catch {
+        dateMain = task.dueDate;
+      }
+    } else if (d === 0) dateMain = "Today";
+    else if (d > 0) dateMain = `in ${d} days`;
+    else {
+      overdueDays = Math.abs(d);
+      dateMain = `overdue by ${overdueDays} day${overdueDays === 1 ? '' : 's'}`;
+    }
 
     const el = createItemElement({
       title: task.title,
@@ -529,7 +569,8 @@ function renderTasksView() {
       taskId: task.id,
       completed: task.completed,
       onCheckChange: () => toggleTaskCompletion(task.id),
-      onClick: () => openEditTask(task.id)
+      onClick: () => openEditTask(task.id),
+      overdueDays: overdueDays
     });
 
     tasksList.appendChild(el);

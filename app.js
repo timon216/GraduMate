@@ -114,7 +114,7 @@ function setActiveNav(activeBtn) {
 
 function getSubjectName(subjectId) {
   const s = subjects.find(sub => sub.id === subjectId);
-  return s ? s.name : "Brak przedmiotu";
+  return s ? s.name : "No subject";
 }
 
 function clearForms() {
@@ -191,9 +191,9 @@ function isWithinNextDays(dateStr, days) {
 
 function prettyDate(dateStr) {
   const diff = daysFromToday(dateStr);
-  if (diff === 0) return "Dzisiaj";
-  if (diff === 1) return "Jutro";
-  if (diff > 1 && diff <= 7) return `Za ${diff} dni`;
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Tomorrow";
+  if (diff > 1 && diff <= 7) return `In ${diff} days`;
   try {
     return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   } catch {
@@ -331,11 +331,11 @@ function fillSubjectSelects() {
   const noSubjects = subjects.length === 0;
   if (chooseTask) {
     chooseTask.disabled = noSubjects;
-    chooseTask.title = noSubjects ? 'Dodaj najpierw przedmiot' : '';
+    chooseTask.title = noSubjects ? 'Add a subject first' : '';
   }
   if (chooseEvent) {
     chooseEvent.disabled = noSubjects;
-    chooseEvent.title = noSubjects ? 'Dodaj najpierw przedmiot' : '';
+    chooseEvent.title = noSubjects ? 'Add a subject first' : '';
   }
 }
 
@@ -451,12 +451,12 @@ function renderWeekView() {
     if (item.kind === "event") {
       dateMain = formatEventMainDate(item.date);
       const d = daysFromToday(item.date);
-      if (d === 0) dateSub = "Dzisiaj";
-      else if (d > 0 && d <= 7) dateSub = `za ${d} dni`;
+      if (d === 0) dateSub = "Today";
+      else if (d > 0 && d <= 7) dateSub = `in ${d} days`;
     } else {
       const d = daysFromToday(item.date);
-      if (d === 0) dateMain = "Dzisiaj";
-      else dateMain = `za ${d} dni`;
+      if (d === 0) dateMain = "Today";
+      else dateMain = `in ${d} days`;
     }
 
     const el = createItemElement({
@@ -487,7 +487,7 @@ function renderTasksView() {
 
   sorted.forEach(task => {
     const d = daysFromToday(task.dueDate);
-    const dateMain = d === 0 ? "Dzisiaj" : `za ${d} dni`;
+    const dateMain = d === 0 ? "Today" : `in ${d} days`;
 
     const el = createItemElement({
       title: task.title,
@@ -513,7 +513,7 @@ function renderEventsView() {
   sorted.forEach(ev => {
     const dateMain = formatEventMainDate(ev.date);
     const d = daysFromToday(ev.date);
-    const dateSub = d === 0 ? "Dzisiaj" : (d > 0 && d <= 7 ? `za ${d} dni` : null);
+    const dateSub = d === 0 ? "Today" : (d > 0 && d <= 7 ? `in ${d} days` : null);
 
     const el = createItemElement({
       title: ev.title,
@@ -642,7 +642,7 @@ function deleteEvent(id) {
 
 function openAddMenu() {
   openModal();
-  modalTitle.textContent = "Dodaj";
+  modalTitle.textContent = "Add";
   hideAllModalSections();
   show(modalTypeSelect);
 
@@ -657,7 +657,7 @@ function openAddMenu() {
 
 function openAddSubject() {
   openModal();
-  modalTitle.textContent = "Dodaj przedmiot";
+  modalTitle.textContent = "Add subject";
   hideAllModalSections();
   show(formSubject);
 
@@ -672,7 +672,7 @@ function openAddSubject() {
 
 function openAddTask() {
   openModal();
-  modalTitle.textContent = "Dodaj zadanie";
+  modalTitle.textContent = "Add task";
   hideAllModalSections();
   show(formTask);
 
@@ -687,7 +687,7 @@ function openAddTask() {
 
 function openAddEvent() {
   openModal();
-  modalTitle.textContent = "Dodaj wydarzenie";
+  modalTitle.textContent = "Add event";
   hideAllModalSections();
   show(formEvent);
 
@@ -710,7 +710,7 @@ function openEditSubject(id) {
   if (!sub) return;
 
   openModal();
-  modalTitle.textContent = "Edytuj przedmiot";
+  modalTitle.textContent = "Edit subject";
   hideAllModalSections();
   show(formSubject);
 
@@ -730,7 +730,7 @@ function openEditTask(id) {
   if (!task) return;
 
   openModal();
-  modalTitle.textContent = "Edytuj zadanie";
+  modalTitle.textContent = "Edit task";
   hideAllModalSections();
   show(formTask);
 
@@ -753,7 +753,7 @@ function openEditEvent(id) {
   if (!ev) return;
 
   openModal();
-  modalTitle.textContent = "Edytuj wydarzenie";
+  modalTitle.textContent = "Edit event";
   hideAllModalSections();
   show(formEvent);
 
@@ -829,7 +829,7 @@ formEvent.addEventListener("submit", (e) => {
 if (deleteSubjectBtn) {
   deleteSubjectBtn.addEventListener("click", () => {
     if (!editingId) return;
-    if (!confirm("Usunąć ten przedmiot? (usunie też jego zadania i wydarzenia)")) return;
+    if (!confirm("Delete this subject? (This will also delete its tasks and events)")) return;
 
     deleteSubject(editingId);
 
@@ -842,7 +842,7 @@ if (deleteSubjectBtn) {
 if (deleteTaskBtn) {
   deleteTaskBtn.addEventListener("click", () => {
     if (!editingId) return;
-    if (!confirm("Usunąć to zadanie?")) return;
+    if (!confirm("Delete this task?")) return;
 
     deleteTask(editingId);
 
@@ -854,7 +854,7 @@ if (deleteTaskBtn) {
 if (deleteEventBtn) {
   deleteEventBtn.addEventListener("click", () => {
     if (!editingId) return;
-    if (!confirm("Usunąć to wydarzenie?")) return;
+    if (!confirm("Delete this event?")) return;
 
     deleteEvent(editingId);
 
@@ -1036,12 +1036,12 @@ if (signOutBtn) signOutBtn.addEventListener('click', async () => { if (!firebase
 if (authLogin) authLogin.addEventListener('click', async () => {
   const email = authEmail.value.trim();
   const pass = authPassword.value;
-  if (!email || !pass) return alert('Wprowadź e-mail i hasło');
+  if (!email || !pass) return alert('Enter email and password');
   try {
     await firebaseAuth.signInWithEmailAndPassword(email, pass);
     closeAuth();
   } catch (err) {
-    alert('Logowanie nieudane: ' + err.message);
+    alert('Login failed: ' + err.message);
   }
 });
 
@@ -1052,14 +1052,14 @@ if (syncBtn) syncBtn.addEventListener('click', async () => {
   syncBtn.disabled = true;
   syncBtn.classList.add('syncing');
   const origText = syncBtn.textContent;
-  syncBtn.textContent = '⟳ Syncing...';
+  syncBtn.textContent = '⟳ Syncing...'; // Already English
 
   try {
     const found = await loadFromFirestoreAndApply();
-    syncBtn.textContent = found ? '✓ Synced' : '✓ Local data';
+    syncBtn.textContent = found ? '✓ Synced' : '✓ Local data'; // Already English
   } catch (err) {
     console.warn('Sync failed', err);
-    syncBtn.textContent = '✗ Sync failed';
+    syncBtn.textContent = '✗ Sync failed'; // Already English
   }
 
   setTimeout(() => {

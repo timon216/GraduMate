@@ -421,6 +421,33 @@ form button {
 
 .form__label {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   align-items: center;
+  width: 100%;
+}
+
+.form__select {
+  flex-grow: 1;
+  max-width: 82%;
+  padding: 0.7rem;
+}
+
+@media (max-width: 400px) {
+  .form__select {
+    max-width: 78%;
+  }
+}
+
+.form__input {
+  flex-grow: 1;
+  padding: 0.7rem;
+}
+
+.form__submit {
+  margin-left: auto;
+}
+
+.danger {
+  background-color: rgb(255, 228, 234);
+  color: rgb(161, 28, 28);
 }

@@ -403,7 +403,38 @@ function createItemElement({ title, meta, dateMain, dateSub, isEvent, onClick, t
   item.appendChild(content);
   item.appendChild(date);
 
-  item.addEventListener("click", onClick);
+  // --- Custom click/long-press logic ---
+  let pressTimer = null;
+  let longPressTriggered = false;
+
+  const LONG_PRESS_MS = 500;
+
+  function onPointerDown(e) {
+    longPressTriggered = false;
+    pressTimer = setTimeout(() => {
+      longPressTriggered = true;
+      if (onClick) onClick(e);
+    }, LONG_PRESS_MS);
+  }
+
+
+  function onPointerUp(e) {
+    clearTimeout(pressTimer);
+    if (!longPressTriggered) {
+      // Short click
+      if (taskId !== undefined) {
+        // Task: mark as done
+        if (onCheckChange) onCheckChange(e);
+        // Force UI update immediately
+        if (typeof renderAll === 'function') renderAll();
+      }
+      // For events, do nothing on short click
+    }
+  }
+
+  item.addEventListener('pointerdown', onPointerDown);
+  item.addEventListener('pointerup', onPointerUp);
+  item.addEventListener('pointerleave', () => clearTimeout(pressTimer));
 
   return item;
 }

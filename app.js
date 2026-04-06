@@ -582,7 +582,12 @@ function renderEventsView() {
 
   const sorted = [...events].sort((a, b) => toTimestamp(a.date) - toTimestamp(b.date));
 
-  sorted.forEach(ev => {
+  // Separate future and past events
+  const futureEvents = sorted.filter(ev => daysFromToday(ev.date) >= 0);
+  const pastEvents = sorted.filter(ev => daysFromToday(ev.date) < 0);
+
+  // Render future events first
+  futureEvents.forEach(ev => {
     const dateMain = formatEventMainDate(ev.date);
     const d = daysFromToday(ev.date);
     const dateSub = d === 0 ? "Today" : (d > 0 && d <= 7 ? `in ${d} days` : null);
@@ -596,6 +601,33 @@ function renderEventsView() {
       onClick: () => openEditEvent(ev.id)
     });
 
+    eventsList.appendChild(el);
+  });
+
+  // Add section header if there are past events
+  if (pastEvents.length > 0) {
+    const header = document.createElement("div");
+    header.classList.add("section-header");
+    header.textContent = "Past Events";
+    eventsList.appendChild(header);
+  }
+
+  // Render past events below in gray
+  pastEvents.forEach(ev => {
+    const dateMain = formatEventMainDate(ev.date);
+    const d = daysFromToday(ev.date);
+    const dateSub = null;
+
+    const el = createItemElement({
+      title: ev.title,
+      meta: getSubjectName(ev.subjectId),
+      dateMain,
+      dateSub,
+      isEvent: true,
+      onClick: () => openEditEvent(ev.id)
+    });
+
+    el.classList.add("item--past");
     eventsList.appendChild(el);
   });
 }

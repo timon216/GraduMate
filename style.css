@@ -257,6 +257,26 @@ main {
   text-decoration: line-through;
 }
 
+.item--past {
+  opacity: 0.9;
+  background-color: rgb(197, 197, 197) !important;
+}
+
+.item--past .item__title,
+.item--past .item__meta,
+.item--past .item__date {
+  color: #2c2c2c;
+}
+
+.section-header {
+  font-size: var(--fs-500);
+  font-weight: 600;
+  color: #585858;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1rem;
+}
+
 .subject-item {
   position: relative;
   padding: 0.5rem 2rem;

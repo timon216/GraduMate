@@ -212,8 +212,8 @@ function prettyDate(dateStr) {
 function formatEventMainDate(dateStr) {
   try {
     const d = new Date(dateStr);
-    const weekday = d.toLocaleDateString('pl-PL', { weekday: 'short' });
-    const dayMonth = d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' });
+    const weekday = d.toLocaleDateString('en-US', { weekday: 'short' });
+    const dayMonth = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
     return `${weekday}, ${dayMonth}`;
   } catch {
     return dateStr;

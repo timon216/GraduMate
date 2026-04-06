@@ -117,6 +117,14 @@ function getSubjectName(subjectId) {
   return s ? s.name : "No subject";
 }
 
+function sortSubjectsInPlace() {
+  subjects.sort((a, b) => {
+    const nameA = (a?.name || "").trim();
+    const nameB = (b?.name || "").trim();
+    return nameA.localeCompare(nameB, undefined, { sensitivity: "base" });
+  });
+}
+
 function clearForms() {
   subjectName.value = "";
   taskTitle.value = "";
@@ -1006,10 +1014,12 @@ function loadData(key, fallback) {
 let subjects = loadData(STORAGE_SUBJECTS, defaultSubjects);
 let tasks = loadData(STORAGE_TASKS, defaultTasks);
 let events = loadData(STORAGE_EVENTS, defaultEvents);
+sortSubjectsInPlace();
 
 
 // ===== SAVE TO LOCALSTORAGE =====
 function saveAll() {
+  sortSubjectsInPlace();
   localStorage.setItem(STORAGE_SUBJECTS, JSON.stringify(subjects));
   localStorage.setItem(STORAGE_TASKS, JSON.stringify(tasks));
   localStorage.setItem(STORAGE_EVENTS, JSON.stringify(events));

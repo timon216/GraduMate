@@ -540,8 +540,13 @@ function renderTasksView() {
   tasksList.innerHTML = "";
 
   const sorted = [...tasks].sort((a, b) => toTimestamp(a.dueDate) - toTimestamp(b.dueDate));
+  const overdueTasks = sorted.filter(task => !task.completed && daysFromToday(task.dueDate) < 0);
+  const activeTasks = sorted.filter(task => !task.completed && daysFromToday(task.dueDate) >= 0);
+  const completedTasks = [...sorted]
+    .filter(task => task.completed)
+    .sort((a, b) => toTimestamp(b.dueDate) - toTimestamp(a.dueDate));
 
-  sorted.forEach(task => {
+  function appendTask(task) {
     const d = daysFromToday(task.dueDate);
     let dateMain = "";
     let overdueDays = 0;
@@ -574,7 +579,19 @@ function renderTasksView() {
     });
 
     tasksList.appendChild(el);
-  });
+  }
+
+  overdueTasks.forEach(appendTask);
+  activeTasks.forEach(appendTask);
+
+  if (completedTasks.length > 0) {
+    const header = document.createElement("div");
+    header.classList.add("section-header");
+    header.textContent = "Tasks Log";
+    tasksList.appendChild(header);
+  }
+
+  completedTasks.forEach(appendTask);
 }
 
 function renderEventsView() {
@@ -608,7 +625,7 @@ function renderEventsView() {
   if (pastEvents.length > 0) {
     const header = document.createElement("div");
     header.classList.add("section-header");
-    header.textContent = "Past Events";
+    header.textContent = "Events Log";
     eventsList.appendChild(header);
   }
 
